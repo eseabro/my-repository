@@ -1,0 +1,39 @@
+.data
+CONVERTED_DATA: .hword 0, 0, 0, 0, 0, 0, 0, 0
+     .text
+     .global _start
+_start:
+	LDR R0, =0xEE201000	//first address
+	LDR R1, =0xEE201004	//second address
+	LDR R6, =0xEE201008	//converted data address
+	LDR R7, =CONVERTED_DATA	//Address of CONVERTED_DATA
+	MOV R8, #0b000000		
+	STR R8, [R0]		//setting I, D, go to 0  as well as channel select
+	MOV R2, #8		// R2 = 8 (number of channels to go through)
+	MOV R3, #0		// R3 is the current channel index
+
+LOOP:
+	ADD R8, R3, #0b1000
+	STRB R8, [R0]		//set the new channel and go to 1
+
+
+POLL: 
+	LDRB R5, [R0, #4]	//Store the value D in r5
+	CMP R5, #1		//check if D =1
+	BEQ PUT			// if D =1, go to put
+	B POLL			// D is not 1, keep polling
+PUT: 
+	MOV R8, #0b000000		
+	STR R8, [R0]		//setting I, D, go to 0  as well as channel select
+	LDRH  R4, [R6] 		// R4 now holds converted data
+	STRH R4, [R7], R3 	//Store the converted data in CONVERTED_DATA
+	ADD R3, R3, #1		//increment channel index
+	SUB R2, R2, #1		// decrement the number of channels left
+	CMP R2, #0		// check if there are no more channels
+	BEQ END			// if no more channels, go to end
+	B LOOP
+END:
+	B END
+	
+	
+	

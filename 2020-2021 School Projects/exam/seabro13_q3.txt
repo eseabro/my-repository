@@ -1,0 +1,51 @@
+module D_Flip_Flop (data, clk, resetn, q);
+  input data, clk, resetn;
+  output reg q;
+
+  always @ (posedge clk) begin
+    if (resetn == 0)
+      q <= 1'b0;
+    else
+      q <= data;
+  end
+endmodule
+
+
+module RotateReg(Load, Rotate, N, D, clock, resetn, Q);
+	input Load, Rotate, clock, resetn, N;
+	input [3:0] D;
+	output [3:0] Q;
+	wire [3:0] q, data, w;
+	
+	assign purp[3] = (~(Rotate&N))& q[0];
+	assign purp[2] = (~(Rotate&N))& q[3];
+	assign purp[1] = (~(Rotate&N))& q[2];
+	assign purp[0] = (~(Rotate&N))& q[1];
+
+	assign yell[3] = N & q[1];
+	assign yell[2] = N & q[0];
+	assign yell[1] = N & q[3];
+	assign yell[0] = N & q[2];
+
+	assign blu[3] = (~(Rotate&N))& q[2];
+	assign blu[2] = (~(Rotate&N))& q[1];
+	assign blu[1] = (~(Rotate&N))& q[0];
+	assign blu[0] = (~(Rotate&N))& q[3];
+	
+	assign w[0] = purp[0] | yell[0] | blu[0];
+	assign w[1] = purp[1] | yell[1] | blu[1];
+	assign w[2] = purp[2] | yell[2] | blu[2];
+	assign w[3] = purp[3] | yell[3] | blu[3];
+
+	assign data = Load ? D : w;
+
+
+	D_Flip_Flop 	Q3(data, clock, resetn, q[3]);
+	D_Flip_Flop 	Q2(data, clock, resetn, q[2]);
+	D_Flip_Flop 	Q1(data, clock, resetn, q[1]);
+	D_Flip_Flop 	Q0(data, clock, resetn, q[0]);
+
+endmodule 
+
+
+

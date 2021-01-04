@@ -1,0 +1,22 @@
+
+//if search == found, ret addr of node in R0
+//if not found, ret R0 = -1
+// value searching for is in R1
+
+SEARCH_LIST:
+	PUSH {R2-R3, LR}
+	LDR R2, [R0]
+	CMP R2, #-1
+	BEQ NOTFND
+	CMP R2, R1
+	BEQ FOUND
+	LDR R3, [R0, #4]
+	LDR R0, =R3
+	B SEARCH_LIST
+
+NOTFND:
+	MOV R0, #-1	
+	POP {R2-R3, PC}
+
+FOUND:
+	POP {R2-R3, PC}

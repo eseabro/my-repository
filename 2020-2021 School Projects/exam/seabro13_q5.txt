@@ -1,0 +1,51 @@
+.data
+LIST:
+  .word 2,1,4,6,8,7
+N:
+  .word 6
+
+.text
+.global _start
+_start: 
+	LDR SP, =0x20000
+	LDR R1, =N
+	LDR R0, [R1]
+	LDR R1, =LIST
+	BL SUBR
+	B END
+
+
+SUBR:
+	PUSH {R2-R5, LR}
+	MOV R4, R0
+	MOV R0, #1
+	MOV R5, #1
+
+Loop:
+	SUB R4, R4, #1
+	LDR R2, [R1], #4
+	LDR R3, [R1], #4
+	CMP R3, R2
+	BLT COUNT
+	ADD R5, R5, #1	
+	CMP R4, #0
+	BEQ COUNT
+	B Loop
+
+
+COUNT: 
+	CMP R0, R5
+	BLT GREATER
+	CMP R4, #0
+	BEQ ENDSB
+	B Loop
+
+GREATER:
+	MOV R0, R5
+	CMP R4, #0
+	BEQ ENDSB
+	B Loop
+ENDSB:
+	POP {R2-R5, PC}
+END:
+	B END

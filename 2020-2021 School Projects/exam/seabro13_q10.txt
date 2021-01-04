@@ -1,0 +1,53 @@
+.global _start
+_start: 
+	MOV R0, #0b11010010 //IRQ mode
+	MSR CPSR, R0
+	LDR SP,=0x20000 // IRQ stack pointer
+	MOV R0, #0b11010011 //SVC mode
+	MSR CPSR, R0
+	LDR SP,=0xFFF0000
+
+	BL   CONFIG_GIC    // configure the ARM generic interrupt controller
+	LDR R0, =0xFFFEC800
+	LDR R1, =0xFFFEC804
+	MOV R2, #0x180 	// Hex for 0b110000000
+	STR R2, [R0]	//setting I to 1 to enable interrupts and threshold to 128
+	
+
+
+.global IRQ_HANDLER
+IRQ_HANDLER:
+    /* save R0-R3, because subroutines called from here might modify
+       these registers without saving/restoring them. Save R4, R5
+     because we modify them in this subroutine */
+       PUSH  {R0-R5, LR}
+    
+       /* Read the ICCIAR from the CPU interface */
+       LDR  R4, =MPCORE_GIC_CPUIF
+       LDR  R5, [R4, #ICCIAR]    // read the interrupt ID
+
+AIRBAG_CHECK:
+	CMP R5, #101
+	BEQ AIRBAG_ISR
+	B UNKNOWN_IRQ
+	
+UNKNOWN_IRQ:
+	B UNKNOWN_IRQ
+EXIT_IRQ:
+       /* Write to the End of Interrupt Register (ICCEOIR) */
+       STR  R5, [R4, #ICCEOIR]
+    
+       POP  {R0-R5, LR}
+       SUBS  PC, LR, #4      // return from interrupt
+
+
+AIRBAG_ISR:
+	LDR R7, =0xFFFEC900
+	MOV R8, #1
+	STR R8, [R7]
+	B EXIT_IRQ
+
+
+
+
+	
