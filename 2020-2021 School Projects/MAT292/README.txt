@@ -1,0 +1,1 @@
+This folder contains my lab assignments from the 'MAT292: Ordinary Differential Equations' course. 

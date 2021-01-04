@@ -410,7 +410,7 @@ _start:
 			LDR SP,=0x20000 //set high IRQ stack pointer
 			mov r0, #0b11010011 //move to SVC mode
 			msr cpsr,r0
-			LDR SP,=0xFFF0000 //MAKE STACK POINTERS GREAT AGAIN
+			LDR SP,=0xFFF0000 
 			
 			
 			
