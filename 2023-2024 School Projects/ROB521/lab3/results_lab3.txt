@@ -1,0 +1,2 @@
+calibrated wheel radius: 0.039m 
+calibrated wheel separation: 0.146
